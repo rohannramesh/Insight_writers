@@ -226,6 +226,26 @@ def build_feature_vector_for_article(txtstr):
                  wordlength, wordlength_var, wordlength_skew]
     return output_vec
 
+def give_author_suggestion_from_author(writer_feature_subsection, author):
+    norm_feature_df = normalize_df(writer_feature_subsection)
+    authors = norm_feature_df['author_list'].tolist()
+    if author not in authors:
+        return 'blah'
+    else:
+        idx = authors.index(author)
+        norm_vec = norm_feature_df.iloc[idx][:-1]
+        # do similarity test
+        similarity_vec = []
+        for i in range(0,len(authors)):
+            vec1 = norm_feature_df.iloc[i,:-1].values
+            result1 = cos_sim(vec1, norm_vec)
+            similarity_vec.append(round(result1*10,2)) # multiply bu 10 to scale
+        tdf = pd.DataFrame.from_dict({'similarity': similarity_vec, 'authors': authors})
+        output_df = tdf.sort_values(by='similarity', ascending=False)
+        return output_df.iloc[0:5]
+
+
+
 def give_suggestion_featurespace_single_article(writer_feature_subsection, txtstr=None, url=None):
     if txtstr is not None:
         vec = build_feature_vector_for_article(txtstr)
@@ -340,14 +360,19 @@ app.layout = html.Div(children=[
     	dcc.Input(id='url-input-box', type='text', size=130, 
     		placeholder='Enter url of NBA article', style= {'horizontalAlign':"left", 'float': 'none'}),
     	html.Button(id='submit-button', n_clicks=0, children='Submit'),
-    	html.Div(id='output-state')]),
+        html.Div(id='output-state'),
 
+        dcc.Input(id='author-input-box', type='text', size=45, 
+            placeholder='Enter favorite NBA author', style= {'horizontalAlign':"left", 'float': 'none'}),
+        html.Button(id='submit-button2', n_clicks=0, children='Submit'),
+        html.Div(id='output-state-author'),
+]),
 
         # style = dict(width = '70%', display = 'table-cell', verticalAlign = "middle",
         # 	textAlign="center"),
 ])
 
-
+# for url
 @app.callback(
     Output('output-state', 'children'),
     [Input('submit-button', 'n_clicks')],
@@ -359,6 +384,18 @@ def update_output_div(n_clicks, input_value):
 	article_sugg = recommend_article_content(kv, w2v_df, lem_text=lem_txt)
 	return generate_tables_author_content_similarity(author_sugg, article_sugg)
 
+# for author
+@app.callback(
+    Output('output-state-author', 'children'),
+    [Input('submit-button2', 'n_clicks')],
+    [State('author-input-box', 'value')]
+)
+def update_output_div_author(n_clicks, input_value):
+    author_sugg = give_author_suggestion_from_author(writer_features, input_value)
+    # article, lem_txt = grab_article(input_value)
+    # author_sugg = give_suggestion_featurespace_single_article(writer_features, txtstr=article.text)
+    # article_sugg = recommend_article_content(kv, w2v_df, lem_text=lem_txt)
+    return get_Table_html(author_sugg)
 
 
 if __name__ == '__main__':
