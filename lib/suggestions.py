@@ -62,7 +62,7 @@ def give_author_suggestion_from_author(writer_feature_subsection, author):
             similarity_vec.append(round(result1*10,2)) # multiply bu 10 to scale
         tdf = pd.DataFrame.from_dict({'similarity': similarity_vec, 'authors': authors})
         output_df = tdf.sort_values(by='similarity', ascending=False)
-        return output_df.iloc[0:5]
+        return output_df.iloc[0:10]
 
 
 def give_suggestion_featurespace_single_article(writer_feature_subsection, txtstr=None, url=None):
