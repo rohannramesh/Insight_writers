@@ -93,7 +93,7 @@ def give_suggestion_featurespace_single_article(writer_feature_subsection, txtst
         similarity_vec.append(round(result1*10,2)) # multiply bu 10 to scale
     tdf = pd.DataFrame.from_dict({'similarity': similarity_vec, 'authors': authors})
     output_df = tdf.sort_values(by='similarity', ascending=False)
-    return output_df.iloc[0:5]
+    return output_df.iloc[0:10]
 
 
 def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=None):
@@ -105,7 +105,7 @@ def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=N
     :return: df with recommendations
     """
     if article_url is not None:
-        arti, a = grab_article(url)
+        arti, lem_text = grab_article(url)
     # preprocess data
     # a = grab_article_for_w2v(article_url)
     # get vector
