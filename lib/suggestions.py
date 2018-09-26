@@ -58,6 +58,7 @@ def give_author_suggestion_from_author(writer_feature_subsection, author):
     """
     norm_feature_df = normalize_df(writer_feature_subsection)
     authors = norm_feature_df['author_fn'].tolist()
+    author_wn = norm_feature_df['author_list']
     if author not in authors:
         return 'Author not found in database'
     else:
@@ -69,8 +70,9 @@ def give_author_suggestion_from_author(writer_feature_subsection, author):
             vec1 = norm_feature_df.iloc[i,:-2].values
             result1 = cos_sim(vec1, norm_vec)
             similarity_vec.append(round(result1*10,1)) # multiply bu 10 to scale
-        tdf = pd.DataFrame.from_dict({'similarity': similarity_vec, 'authors': authors})
-        output_df = tdf.sort_values(by='similarity', ascending=False)
+        tdf = pd.DataFrame.from_dict({'Similarity (0-10)': similarity_vec, 
+            'Authors': authors, 'Author_wn': author_wn})
+        output_df = tdf.sort_values(by='Similarity (0-10)', ascending=False)
         # filter our current author
         output_df = output_df[output_df['authors'] != author]
         return output_df.iloc[0:10]
@@ -96,14 +98,17 @@ def give_suggestion_featurespace_single_article(writer_feature_subsection, txtst
                              writer_feature_subsection.std().tolist())
     norm_feature_df = normalize_df(writer_feature_subsection)
     authors = norm_feature_df['author_fn']
+    # website names
+    author_wn = norm_feature_df['author_list']
     # do similarity test
     similarity_vec = []
     for i in range(0,len(authors)):
         vec1 = norm_feature_df.iloc[i,:-2].values
         result1 = cos_sim(vec1, norm_vec)
         similarity_vec.append(round(result1*10,1)) # multiply bu 10 to scale
-    tdf = pd.DataFrame.from_dict({'similarity': similarity_vec, 'authors': authors})
-    output_df = tdf.sort_values(by='similarity', ascending=False)
+    tdf = pd.DataFrame.from_dict({'Similarity (0-10)': similarity_vec, 'Authors': authors,
+         'Author_wn': author_wn})
+    output_df = tdf.sort_values(by='Similarity (0-10)', ascending=False)
     # output_df = output_df[output_df['authors'] != author]
     return output_df.iloc[0:10]
 
@@ -127,9 +132,10 @@ def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=N
     for i in w2v_df:
         cos_sim_output.append(round(cos_sim(w2v_df[i],article_vector)*10,1)) # multiply by 10 for scale
     r = pd.DataFrame.from_dict({
-        'similarity': cos_sim_output, "suggested articles": w2v_df.keys()
+        'Similarity (0-10)': cos_sim_output, "Suggested articles": w2v_df.keys()
     })
-    df_content_sim = r.sort_values(by='similarity', ascending=False)
+    df_content_sim = r.sort_values(by='Similarity (0-10)', ascending=False)
+    df_content_sim = df_content_sim[df_content_sim['Similarity (0-10)'] != 10]
     return df_content_sim
 
 

@@ -59,17 +59,24 @@ with open(path_teams, 'r') as f:
 team_names = [i.rstrip() for i in tmp]
 nlp = en_core_web_sm.load()
 
+# config file
+path_teams = '/Users/rohanramesh/Documents/Insight/data_bball_writers/config.txt'
+with open(path_teams, 'r') as f:
+    tmp = f.readlines()
+keys = [i.rstrip() for i in tmp]
+
 # build api for y
-# YOUTUBE_API_SERVICE_NAME = "youtube"
-# YOUTUBE_API_VERSION = "v3"
-# youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
+DEVELOPER_KEY = keys[0]
+YOUTUBE_API_SERVICE_NAME = "youtube"
+YOUTUBE_API_VERSION = "v3"
+youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
 
 
 # embed_url = '//www.youtube.com/embed/o1BrK2KWifc'
 # embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
-embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
- '<iframe width="480" height="270" src="//www.youtube.com/embed/LgzhCXsBdpA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
- '<iframe width="480" height="270" src="//www.youtube.com/embed/ui1SquTFnxo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
+# embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
+#  '<iframe width="480" height="270" src="//www.youtube.com/embed/LgzhCXsBdpA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
+#  '<iframe width="480" height="270" src="//www.youtube.com/embed/ui1SquTFnxo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
 
 
 #######################
@@ -77,7 +84,7 @@ embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4
 
 def get_video_id(q, max_results,token, order="relevance", 
                  location=None, location_radius=None):
-
+    # get youtube embedding info
     search_response = youtube.search().list(
         q=q, type="video", pageToken=token,part="id,snippet", 
         maxResults=max_results, location=location, 
@@ -110,23 +117,37 @@ def get_Table_html(dataframe, max_rows=10):
     for i in range(min(len(dataframe), max_rows)):
         row = []
         for col in dataframe.columns:
+            if col == 'Author_wn':
+                continue
             value = dataframe.iloc[i][col]
             # update this depending on which
             # columns you want to show links for
             # and what you want those links to be
-            if col == 'suggested articles':
-                article = Article(value)
-                article.download()
-                article.parse()
-                article.title
-                cell = html.Td(html.A(href=value, children=article.title, target='_blank'))
+            if col == 'Suggested articles':
+                try: 
+                    article = Article(value)
+                    article.download()
+                    article.parse()
+                    article.title
+                    # cell = html.Td(html.A(href=value, children=article.title, target='_blank'))
+                    cell = html.Td(html.A(href=value, children=article.title, target='TargetArticle'))
+                except:
+                    cell = html.Td(children=value)
+                    print(value)
+            elif col == 'Authors':
+                try: 
+                    path_link = 'https://muckrack.com/' + dataframe.iloc[i]['Author_wn']
+                    cell = html.Td(html.A(href=path_link, children=value, target='_blank'))
+                except:
+                    cell = html.Td(children=value)
+                    print(value)
             else:
                 cell = html.Td(children=value)
             row.append(cell)
         rows.append(html.Tr(row))
     return html.Table(
         # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns])] +
+        [html.Tr([html.Th(col) for col in dataframe.columns if col != 'Author_wn'])] +
 
         rows
     )
@@ -139,7 +160,7 @@ def get_video_rows(embed_url):
 
 
 
-def generate_tables_author_content_similarity(df_authors, df_content, embed_url, max_rows=5):
+def generate_tables_author_content_similarity(df_authors, df_content, urls_to_show, max_rows=5):
 	return [
 	html.Div([
 		html.Div([
@@ -165,30 +186,26 @@ def generate_tables_author_content_similarity(df_authors, df_content, embed_url,
 
 			], className="four columns"),
 
-        # html.Div([
-        #     html.Div([
-        #         html.Br([])]),
 
-        #     html.H5(children='''Video content:''' , 
-        #         style={'textAlign': 'center', 'float': 'none'}),
 
-        #     html.Iframe(src=embed_url[0], width='400', height='300'),
-        #     html.Br([]),
-        #     html.Iframe(src=embed_url[1], width='400', height='300'),
-        #     html.Br([]),
-        #     html.Iframe(src=embed_url[2], width='400', height='300'),
-        #     # for iii in embed_url:
-        #     # get_video_rows(embed_url)
-        #     # html.Div([
-        #     #     rows = []
-        #     #     for rr in range(0,len(embed_url)):
-        #     #         rows.append(html.Iframe(src=embed_url[rr], width='260', height='150'))
-        #     #     rows])
-        #     # [html.Iframe(src=iii) for iii in embed_url]
+        html.Div([
+            html.Div([
+                html.Br([])]),
 
-        #     ], className="four columns")
+            html.H5(children='''Video content:''' , 
+                style={'textAlign': 'left', 'float': 'none'}),
+
+            html.Iframe(src=urls_to_show[0], width='400', height='200'),
+            html.Br([]),
+            html.Iframe(src=urls_to_show[1], width='400', height='200'),
+            # html.Br([]),
+            # html.Iframe(src=urls_to_show[2], width='300', height='150'),
+            ], className="four columns")
+
 
 		], className="row"),
+
+
 
         html.Div([
             html.Div([
@@ -196,40 +213,48 @@ def generate_tables_author_content_similarity(df_authors, df_content, embed_url,
                 html.Br([]),
                 html.Br([])]),
 
-            html.H5(children='''Video content:''' , 
-                style={'textAlign': 'left', 'float': 'none'},
-                className="three columns"),
+            # html.H5(children='''Video content:''' , 
+            #     style={'textAlign': 'left', 'float': 'none'},
+            #     className="three columns"),
+
+            # html.Div([
+            #     html.Div([
+            #         html.Br([])]),
+
+            #     html.Iframe(src=urls_to_show[0], width='400', height='300'),
+
+            #     ], className="three columns"),
+
+            # html.Div([
+            #     html.Div([
+            #         html.Br([])]),
+
+            #     html.Iframe(src=urls_to_show[1], width='400', height='300'),
+
+            #     ], className="three columns"),
+
+            # html.Div([
+            #     html.Div([
+            #         html.Br([])]),
+
+            #     html.Iframe(src=urls_to_show[2], width='400', height='300'),
+
+            #     ], className="three columns"),
 
             html.Div([
                 html.Div([
                     html.Br([])]),
 
-                html.Iframe(src=embed_url[0], width='400', height='300'),
+                html.H2(children='''Article viewer:''' , 
+                    style={'textAlign': 'center', 'float': 'center'}),
 
-                ], className="three columns"),
-
-            html.Div([
                 html.Div([
                     html.Br([])]),
 
-                html.Iframe(src=embed_url[1], width='400', height='300'),
+                html.Iframe(src="", width='1200', height='900', name='TargetArticle',
+                    style={'textAlign': 'center', 'float': 'center', 'border': 'none'})
 
-                ], className="three columns"),
-
-            html.Div([
-                html.Div([
-                    html.Br([])]),
-
-                html.Iframe(src=embed_url[2], width='400', height='300'),
-
-                ], className="three columns"),
-
-
-            # html.Iframe(src=embed_url[0], width='400', height='300'),
-            # html.Br([]),
-            # html.Iframe(src=embed_url[1], width='400', height='300'),
-            # html.Br([]),
-            # html.Iframe(src=embed_url[2], width='400', height='300'),
+                ], style={'textAlign': 'center', 'float': 'center', 'border': 'none'}),
 
             ], className="row")
 
@@ -298,11 +323,16 @@ def update_output_div(n_clicks, input_value1, input_value2):
         author_sugg = s.give_suggestion_featurespace_single_article(writer_features, txtstr=article.text)
         article_sugg = s.recommend_article_content(kv, w2v_df, lem_text=lem_txt)
         search_string = s.get_search_terms(article.title, team_names)
-        # youtube_ouput, b = get_video_id(search_string, 1, None)
-        urls_to_pass = s.parse_iframe_html(embed_url) 
+        if search_string == '': # if empty put as search term the first author
+            search_string = article.authors[0]
+        print(search_string)
+        youtube_ouput, b = get_video_id(search_string, 2, None)
+        # urls_to_pass = s.parse_iframe_html(embed_url) 
+        urls_to_pass = s.parse_iframe_html(youtube_ouput['embed_url'])
         return generate_tables_author_content_similarity(author_sugg, article_sugg, urls_to_pass)
     elif not input_value1:
         author_sugg = s.give_author_suggestion_from_author(writer_features, input_value2)
+        print(author_sugg)
         if isinstance(author_sugg, str):
             return author_sugg
         else:
@@ -311,8 +341,16 @@ def update_output_div(n_clicks, input_value1, input_value2):
         article, lem_txt = s.grab_article(input_value1)
         author_sugg = s.give_author_suggestion_from_author(writer_features, input_value2)
         article_sugg = s.recommend_article_content(kv, w2v_df, lem_text=lem_txt)
-        # youtube_ouput, b = get_video_id(search_string, 1, None
-        return generate_tables_author_content_similarity(author_sugg, article_sugg, embed_url)
+        if isinstance(author_sugg, str):
+            return author_sugg
+        else:
+            search_string = s.get_search_terms(article.title, team_names)
+            if search_string == '': # if empty put as search term the first author
+                search_string = article.authors[0]
+            youtube_ouput, b = get_video_id(search_string, 2, None)
+            # urls_to_pass = s.parse_iframe_html(embed_url) 
+            urls_to_pass = s.parse_iframe_html(youtube_ouput['embed_url'])
+            return generate_tables_author_content_similarity(author_sugg, article_sugg, urls_to_pass)
 
 
 
