@@ -1,19 +1,28 @@
 /*body {
     font-family: this;
-    color: #111;
+    color: rgb(255, 255, 255);
     font-size: 35;
 }*/
 
 /*html is set to 62.5% so that all the REM measurements throughout Skeleton
 are based on 10px sizing. So basically 1.5rem = 15px :) */
 html {
-  font-size: 62.5%; }
+  font-size: 62.5%; 
+}
 body {
   font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
   font-weight: 400;
   font-family: this, "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: rgb(50, 50, 50); }
+  color: rgb(255, 255, 255); 
+}
+body {
+/*    background-image: url("img_tree.gif"), url("paper.gif");*/
+    background-image: url('https://i1.wallbox.ru/wallpapers/main/201333/wood-derevo-parket-a9a5143.jpg');
+    background-repeat: repeat;
+    background-color: #cccccc;
+    height: 1500px;
+}
 
 
 h1, h2, h3, h4, h5, h6 {
@@ -21,6 +30,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0;
   font-weight: 300; 
   font-family: this;
+  color: rgb(255, 255, 255); 
 }
 h1 { font-size: 5.6rem; line-height: 1.2;  letter-spacing: -.1rem; margin-bottom: 2rem; }
 h2 { font-size: 3.0rem; line-height: 1.25; letter-spacing: -.1rem; margin-bottom: 1.8rem; margin-top: 1.8rem;}
@@ -38,7 +48,8 @@ p {
   max-width: 960px;
   margin: 0 auto;
   padding: 0 20px;
-  box-sizing: border-box; }
+  box-sizing: border-box; 
+}
 .column,
 .columns {
   width: 100%;
@@ -118,7 +129,7 @@ p {
 /* Blockquotes
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 blockquote {
-  border-left: 4px lightgrey solid;
+  border-left: 4px white;
   padding-left: 1rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
@@ -129,11 +140,12 @@ blockquote {
 /* Links
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 a {
-  color: #1EAEDB; 
+  /*color: #1EAEDB; */
+  color: rgb(255, 255, 255);
   text-decoration: underline;
   cursor: pointer;}
 a:hover {
-  color: #0FA0CE; }
+  color: rgb(0, 0, 0); }
 
 
 /* Buttons
@@ -146,9 +158,11 @@ input[type="button"] {
   display: inline-block;
   height: 38px;
   padding: 0 30px;
-  color: #555;
+  /*color: #555;*/
+    color: rgb(255, 255, 255);
   text-align: center;
   font-size: 11px;
+  font-family: this;
   font-weight: 600;
   line-height: 38px;
   letter-spacing: .1rem;
@@ -157,12 +171,15 @@ input[type="button"] {
   white-space: nowrap;
   background-color: transparent;
   border-radius: 4px;
-  border: 1px solid #bbb;
+  border: 1px solid #fff;
   cursor: pointer;
   box-sizing: border-box; }
 .button:hover,
 button:hover,
-input[type="submit"]:hover,
+input[type="submit"]:hover {
+  color: rgb(0, 0, 0); 
+  border: 1px solid rgb(0, 0, 0);
+}
 input[type="reset"]:hover,
 input[type="button"]:hover,
 .button:focus,
@@ -170,7 +187,7 @@ button:focus,
 input[type="submit"]:focus,
 input[type="reset"]:focus,
 input[type="button"]:focus {
-  color: #333;
+  color: rgb(255, 255, 255);
   border-color: #888;
   outline: 0; }
 .button.button-primary,
@@ -178,7 +195,7 @@ button.button-primary,
 input[type="submit"].button-primary,
 input[type="reset"].button-primary,
 input[type="button"].button-primary {
-  color: #FFF;
+  color: rgb(255, 255, 255);
   background-color: #33C3F0;
   border-color: #33C3F0; }
 .button.button-primary:hover,
@@ -191,7 +208,7 @@ button.button-primary:focus,
 input[type="submit"].button-primary:focus,
 input[type="reset"].button-primary:focus,
 input[type="button"].button-primary:focus {
-  color: #FFF;
+  color: rgb(255, 255, 255);
   background-color: #1EAEDB;
   border-color: #1EAEDB; }
 
@@ -202,6 +219,19 @@ input[type="email"],
 input[type="number"],
 input[type="search"],
 input[type="text"],
+/*textarea,
+select {
+height: 38px;
+padding: 6px 10px;*/ /* The 6px vertically centers text on FF, ignored by Webkit */
+/*background-color: #fff;*/
+/*color: rgb(255, 255, 255);
+background-color: transparent;
+border: 1px solid #fff;
+border-radius: 4px;
+box-shadow: none;
+box-sizing: border-box; 
+font-family: inherit;
+font-size: inherit; },*/
 input[type="tel"],
 input[type="url"],
 input[type="password"],
@@ -209,13 +239,15 @@ textarea,
 select {
   height: 38px;
   padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
-  background-color: #fff;
-  border: 1px solid #D1D1D1;
+  /*background-color: #fff;*/
+  /*color: 'white';*/
+  /*background-color: transparent;*/
+  /*border: 1px solid '#D1D1D1';*/
   border-radius: 4px;
   box-shadow: none;
   box-sizing: border-box; 
   font-family: inherit;
-  font-size: inherit; /*https://stackoverflow.com/questions/6080413/why-doesnt-input-inherit-the-font-from-body*/}
+  font-size: inherit; }/*https://stackoverflow.com/questions/6080413/why-doesnt-input-inherit-the-font-from-body}*/
 /* Removes awkward default styles on some inputs for iOS */
 input[type="email"],
 input[type="number"],
@@ -231,7 +263,9 @@ textarea {
 textarea {
   min-height: 65px;
   padding-top: 6px;
-  padding-bottom: 6px; }
+  padding-bottom: 6px; 
+  color: rgb(255, 255, 255);
+}
 input[type="email"]:focus,
 input[type="number"]:focus,
 input[type="search"]:focus,
@@ -283,12 +317,12 @@ li {
 table {
   border-collapse: collapse;
   /*text-align: center;*/
-  margin-left: auto;
-  margin-right: auto;
+/*  margin-left: auto;
+  margin-right: auto;*/
 }
 th,
 td {
-  padding: 12px 15px;
+  padding: 20px 15px;
   text-align: left;
   border-bottom: 1px solid #E1E1E1; 
 }

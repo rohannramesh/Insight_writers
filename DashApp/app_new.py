@@ -32,7 +32,9 @@ import en_core_web_sm
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 import difflib
+import time
 
+t = time.time()
 
 # load dataframe for writer feature space
 writer_features = pd.read_pickle('/Users/rohanramesh/Documents/Insight/data_bball_writers/writer_features_USE.pickle')
@@ -50,6 +52,10 @@ w2v_df = pd.read_pickle('/Users/rohanramesh/Documents/Insight/data_bball_writers
 # for logo
 image_filename = '/Users/rohanramesh/Documents/GitHub/Insight_writers/DashApp/assets/favicon.ico' # replace with your own image
 encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+
+# for background image
+bg_image_filename = '/Users/rohanramesh/Documents/Insight/data_bball_writers/NBA_court.jpg' # replace with your own image
+encoded_image_bg = base64.b64encode(open(bg_image_filename, 'rb').read())
 
 # for youtube suggestions
 # team names
@@ -71,12 +77,14 @@ YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
 
+elapsed = time.time() - t
+print(elapsed)
 
 # embed_url = '//www.youtube.com/embed/o1BrK2KWifc'
 # embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
-# embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
-#  '<iframe width="480" height="270" src="//www.youtube.com/embed/LgzhCXsBdpA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
-#  '<iframe width="480" height="270" src="//www.youtube.com/embed/ui1SquTFnxo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
+embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
+ '<iframe width="480" height="270" src="//www.youtube.com/embed/LgzhCXsBdpA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
+ '<iframe width="480" height="270" src="//www.youtube.com/embed/ui1SquTFnxo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
 
 
 #######################
@@ -117,7 +125,7 @@ def get_Table_html(dataframe, max_rows=10):
     for i in range(min(len(dataframe), max_rows)):
         row = []
         for col in dataframe.columns:
-            if col == 'Author_wn':
+            if (col == 'Author_wn') or (col == 'Similarity (0-10)'):
                 continue
             value = dataframe.iloc[i][col]
             # update this depending on which
@@ -147,9 +155,9 @@ def get_Table_html(dataframe, max_rows=10):
         rows.append(html.Tr(row))
     return html.Table(
         # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns if col != 'Author_wn'])] +
+        # [html.Tr([html.Th(col) for col in dataframe.columns if (col == 'Author_wn') or (col == 'Similarity (0-10)')])] +
 
-        rows
+        rows, style={'float': 'inherit'}
     )
 
 def get_video_rows(embed_url):
@@ -167,13 +175,13 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
 			html.Div([
 				html.Br([])]),
 
-			html.H5(children='''Similar authors to consider:''' , 
-				style={'textAlign': 'center', 'float': 'none'} ),
+			html.H5(children='''Similar authors:''' , 
+				style={'textAlign': 'left', 'float': 'none'} ),
 
 
 			get_Table_html(df_authors, max_rows=5)
 
-			], className="four columns"),
+			], className="two columns"),
 
 		html.Div([
 			html.Div([
@@ -200,7 +208,7 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
             html.Iframe(src=urls_to_show[1], width='400', height='200'),
             # html.Br([]),
             # html.Iframe(src=urls_to_show[2], width='300', height='150'),
-            ], className="four columns")
+            ], className="five columns")
 
 
 		], className="row"),
@@ -209,41 +217,11 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
 
         html.Div([
             html.Div([
-                html.Br([]),
-                html.Br([]),
                 html.Br([])]),
 
-            # html.H5(children='''Video content:''' , 
-            #     style={'textAlign': 'left', 'float': 'none'},
-            #     className="three columns"),
-
-            # html.Div([
-            #     html.Div([
-            #         html.Br([])]),
-
-            #     html.Iframe(src=urls_to_show[0], width='400', height='300'),
-
-            #     ], className="three columns"),
-
-            # html.Div([
-            #     html.Div([
-            #         html.Br([])]),
-
-            #     html.Iframe(src=urls_to_show[1], width='400', height='300'),
-
-            #     ], className="three columns"),
-
-            # html.Div([
-            #     html.Div([
-            #         html.Br([])]),
-
-            #     html.Iframe(src=urls_to_show[2], width='400', height='300'),
-
-            #     ], className="three columns"),
 
             html.Div([
-                html.Div([
-                    html.Br([])]),
+
 
                 html.H2(children='''Article viewer:''' , 
                     style={'textAlign': 'center', 'float': 'center'}),
@@ -266,10 +244,10 @@ app = dash.Dash(__name__)
 # app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 
-colors = {
-    'background': '#111111',
-    'text': '#111111'
-}
+# colors = {
+#     'background': '#111111',
+#     'text': '#111111'
+# }
 
 app.layout = html.Div(children=[
 	html.Div([
@@ -282,9 +260,8 @@ app.layout = html.Div(children=[
     	html.Br([])]),
 
     html.H1(children='Full Court Presser',
-	    style={'float': 'inherit'
-	            # 'textAlign': 'center',
-        }
+	    style={'float': 'inherit',
+	               }
         ),
 
 
@@ -298,16 +275,19 @@ app.layout = html.Div(children=[
 
     html.Div([
     	dcc.Input(id='url-input-box', type='text', size=55, 
-    		placeholder='Enter url of NBA article', style= {'horizontalAlign':"left", 'float': 'none'}),
+    		placeholder='Enter url of NBA article', style= {'horizontalAlign':"left", 
+            'float': 'none'}),
         dcc.Input(id='author-input-box', type='text', size=55, 
             placeholder='Enter favorite NBA author', style= {'horizontalAlign':"left", 'float': 'none'}),
         html.Button(id='submit-button', n_clicks=0, children='Submit'),
         html.Div(id='output-state'),
-]),
+], style={'fontColor': 'white'}),
+
 
         # style = dict(width = '70%', display = 'table-cell', verticalAlign = "middle",
         # 	textAlign="center"),
-])
+],
+)
 
 # for url
 @app.callback(
@@ -326,9 +306,9 @@ def update_output_div(n_clicks, input_value1, input_value2):
         if search_string == '': # if empty put as search term the first author
             search_string = article.authors[0]
         print(search_string)
-        youtube_ouput, b = get_video_id(search_string, 2, None)
-        # urls_to_pass = s.parse_iframe_html(embed_url) 
-        urls_to_pass = s.parse_iframe_html(youtube_ouput['embed_url'])
+        # youtube_ouput, b = get_video_id(search_string, 2, None)
+        urls_to_pass = s.parse_iframe_html(embed_url) 
+        # urls_to_pass = s.parse_iframe_html(youtube_ouput['embed_url'])
         return generate_tables_author_content_similarity(author_sugg, article_sugg, urls_to_pass)
     elif not input_value1:
         author_sugg = s.give_author_suggestion_from_author(writer_features, input_value2)

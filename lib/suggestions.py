@@ -25,6 +25,7 @@ nlp = en_core_web_sm.load()
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 import difflib
+import time
 
 
 def lemstr(txtstr):
@@ -74,7 +75,7 @@ def give_author_suggestion_from_author(writer_feature_subsection, author):
             'Authors': authors, 'Author_wn': author_wn})
         output_df = tdf.sort_values(by='Similarity (0-10)', ascending=False)
         # filter our current author
-        output_df = output_df[output_df['authors'] != author]
+        output_df = output_df[output_df['Authors'] != author]
         return output_df.iloc[0:10]
 
 
@@ -131,6 +132,7 @@ def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=N
     cos_sim_output = []
     for i in w2v_df:
         cos_sim_output.append(round(cos_sim(w2v_df[i],article_vector)*10,1)) # multiply by 10 for scale
+
     r = pd.DataFrame.from_dict({
         'Similarity (0-10)': cos_sim_output, "Suggested articles": w2v_df.keys()
     })
