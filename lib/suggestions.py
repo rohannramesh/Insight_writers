@@ -11,7 +11,7 @@ import re
 import numpy as np
 from nltk.corpus import wordnet # To get words in dictionary with their parts of speech
 from nltk.stem import WordNetLemmatizer # lemmatizes word based on it's parts of speech
-from collections import Counter
+# from collections import Counter
 from nltk.corpus import stopwords 
 import gensim
 from numpy import dot
@@ -19,7 +19,7 @@ from numpy.linalg import norm
 from scipy.stats import skew
 import spacy
 from spacy import displacy
-from collections import Counter
+# from collections import Counter
 import en_core_web_sm
 nlp = en_core_web_sm.load()
 from apiclient.discovery import build
