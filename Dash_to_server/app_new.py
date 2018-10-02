@@ -47,7 +47,7 @@ w2v_df = pd.read_pickle('word2vec_trained.pickle')
 # mydb = client["testinsightdb"]
 
 # for logo
-image_filename = 'MainLogo.png' # replace with your own image
+image_filename = 'BlackWhiteLogo.png' # replace with your own image
 encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
 # for background image
@@ -124,7 +124,7 @@ def get_video_id(q, max_results,token, order="relevance",
              'embed_url':embed_url}
     return ydict, tok
 
-def get_Table_html(dataframe, recent_articles=None, titles_show=None, max_rows=10):
+def get_Table_html(dataframe, recent_articles=None, titles_show=None, max_rows=10, styling=None):
     rows = []
     for i in range(min(len(dataframe), max_rows)):
         row = []
@@ -171,7 +171,7 @@ def get_Table_html(dataframe, recent_articles=None, titles_show=None, max_rows=1
         # Header
         # [html.Tr([html.Th(col) for col in dataframe.columns if (col == 'Author_wn') or (col == 'Similarity (0-10)')])] +
 
-        rows, style={'float': 'inherit', 'margin-left': 25}
+        rows, style=styling
     )
 
 def onLoad_author_names():
@@ -202,10 +202,12 @@ def generate_tables_author_vs_author_similarity(df_authors, recent_articles, max
     return [
     html.Div([
         html.Div([
+            html.Br([]),
+            html.Br([]),
             html.Br([])]),
 
-        html.H4(children='Nothing but net: click on a name to view their most recent article!',
-            style={'float': 'inherit', "margin-left": 25
+        html.H4(children='Nothing but net: click on a name to view his/her most recent article!',
+            style={'float': 'inherit', 'color': 'rgb(255,255,255)'
                        }
                 ),
         ], className='row'),
@@ -217,9 +219,11 @@ def generate_tables_author_vs_author_similarity(df_authors, recent_articles, max
                 html.Br([])]),
 
             html.H5(children='''Authors:''' , 
-                style={'textAlign': 'left', 'float': 'none', "margin-left": 25} ),
+                style={'textAlign': 'left', 'float': 'none', "margin-left": 60, 'color': 'white'} ),
 
-            get_Table_html(df_authors, recent_articles, max_rows=5)
+            get_Table_html(df_authors, recent_articles, max_rows=5,
+                styling={'float': 'inherit', 'margin-left': 60, 'display': 'block', 
+                'padding-left': '10px', 'padding-right': '10px'})
 
             ], className="two columns"),
         ]),
@@ -264,11 +268,14 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
     title_url, max_rows=5):
 	return [
     html.Div([
+    html.Div([
         html.Div([
+            html.Br([]),
+            html.Br([]),
             html.Br([])]),
 
         html.H4(children='Nothing but net: click on a name, article, or video to view suggested content!',
-            style={'float': 'inherit', "margin-left": 25, "color": 'black'
+            style={'float': 'inherit', "color": 'rgb(255,255,255)'
                        }
                 ),
         ], className='row'),
@@ -280,29 +287,16 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
                 html.Br([])]),
 
 			html.H5(children='''Authors:''' , 
-				style={'textAlign': 'left', 'float': 'none', "margin-left": 25, "color": 'black'} ),
+				style={'textAlign': 'left', 'float': 'none', "margin-left": 52, "color": 'white'} ),
 
             # html.H6(children='''Click on link for most recent article''' , 
             #     style={'textAlign': 'left', 'float': 'none'} ),
 
-			get_Table_html(df_authors, recent_articles, max_rows=5)
+			get_Table_html(df_authors, recent_articles, max_rows=5,
+                styling={'float': 'inherit', 'margin-left': 52, 'display': 'block', 
+                'padding-left': '10px', 'padding-right': '10px'})
 
 			], className="two columns"),
-
-
-
-
-		html.Div([
-			html.Div([
-				html.Br([])]),
-
-			html.H5(children='''Topics:''' , 
-				style={'textAlign': 'left', 'float': 'none', "margin-left": 25}),
-
-			get_Table_html(df_content, titles_show=title_url, max_rows=5)
-
-			], className="four columns"),
-
 
 
         html.Div([
@@ -310,14 +304,32 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
                 html.Br([])]),
 
             html.H5(children='''Video:''' , 
-                style={'textAlign': 'left', 'float': 'none'}),
+                style={'textAlign': 'left', 'float': 'none', 'color': 'white', 'margin-left': 80}),
 
-            html.Iframe(src=urls_to_show[0], width='400', height='200'),
+            html.Iframe(src=urls_to_show[0], width='400', height='200', style={'margin-left': 80}),
             html.Br([]),
-            html.Iframe(src=urls_to_show[1], width='400', height='200'),
+            html.Iframe(src=urls_to_show[1], width='400', height='200', style={'margin-left': 80}),
             # html.Br([]),
             # html.Iframe(src=urls_to_show[2], width='300', height='150'),
-            ], className="five columns")
+            ], className="five columns"),
+
+
+		html.Div([
+			html.Div([
+				html.Br([])]),
+
+			html.H5(children='''Topics:''' , 
+				style={'textAlign': 'left', 'float': 'none', "margin-left": 10, 'color': 'white'}),
+
+			get_Table_html(df_content, titles_show=title_url, max_rows=5,
+                styling={'float': 'inherit', 'margin-left': 10, 'display': 'block', 
+                'padding-left': '10px', 'padding-right': '10px'})
+
+			], className="four columns"),
+
+
+
+
 
 
 		], className="row"),
@@ -363,11 +375,13 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
                     html.Br([])]),
 
                 html.Iframe(src="", width='1200', height='900', name='TargetArticle',
-                    style={'float': 'inherit', 'border': 'none'}),
+                    style={'float': 'center', 'border': 'none', 'display': 'block',
+                    'margin': '0 auto'}),
 
-                ], style={ 'float': 'inherit', 'border': 'none'}),
+                ], style={ 'float': 'center', 'border': 'none'}),
 
-            ],className="row")
+            ], className='row')
+        ], style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}, className='row')
 
 	]
 
@@ -387,18 +401,33 @@ app.layout = html.Div(children=[
         html.Div([
             html.Div([
                 html.Br([])]),
-        html.H1(children='Full Court Presser',
-            style={'display': 'inline-block', 'float': 'left', 'color': 'white', 
-            'fontSize': 50,'margin-top': 40}),
-        html.H3(children='''find your favorite writers.''' , 
-            style={'display': 'inline-block', 'float': 'right', 'color': 'white',
-             'textDecoration': 'none','margin-top': 45, 'margin-right': 10}),
         html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), width= 125, height = 125,
                 style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto', 
                 }),
+        html.H1(children='Full Court Presser',
+            style={'color': 'white','fontSize': 50}),
+        html.H3(children='''find your favorite writers.''' , 
+            style={ 'color': 'white','textDecoration': 'none'}),
+
         html.Div([
             html.Br([])]),
-        ], className='bgImage'),
+        ]),
+        # html.Div([
+        #     html.Div([
+        #         html.Br([])]),
+        # html.H1(children='Full Court Presser',
+        #     style={'display': 'inline-block', 'float': 'left', 'color': 'white', 
+        #     'fontSize': 50,'margin-top': 40}),
+        # html.H3(children='''find your favorite writers.''' , 
+        #     style={'display': 'inline-block', 'float': 'right', 'color': 'white',
+        #      'textDecoration': 'none','margin-top': 45, 'margin-right': 10}),
+
+        # html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), width= 125, height = 125,
+        #         style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto', 
+        #         }),
+        # html.Div([
+        #     html.Br([])]),
+        # ], className='bgImage'),
 
 
     	# html.Div([
@@ -541,7 +570,7 @@ def update_output_div(n_clicks, input_value1, input_value2):
     #     return 'you have selected {} option'.format(selected_value)
 
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
 # if __name__ == '__main__':
-#     app.run_server(host='0.0.0.0', debug=True)
+#     app.run_server(debug=True)
+if __name__ == '__main__':
+    app.run_server(host='0.0.0.0', debug=True)

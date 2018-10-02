@@ -48,12 +48,13 @@ def grab_article(article_url):
     lem_art = lemstr(gensim.utils.simple_preprocess(article.text))
     return article, lem_art
 
-def give_author_suggestion_from_author(writer_feature_subsection, author):
+def give_author_suggestion_from_author(writer_feature_subsection, author, nshow=10):
     """
     Given an author found in our database, give suggestions for other similar authors
     based on the features we have calculated to define writer style
     :param writer_feature_subsection: df that has each row for an author and each column a feature
     :param author: author name
+    :param nshow: number to output
     :return:
     """
     norm_feature_df = normalize_df(writer_feature_subsection)
@@ -75,10 +76,10 @@ def give_author_suggestion_from_author(writer_feature_subsection, author):
         output_df = tdf.sort_values(by='Similarity (0-10)', ascending=False)
         # filter our current author
         output_df = output_df[output_df['Authors'] != author]
-        return output_df.iloc[0:10]
+        return output_df.iloc[0:nshow]
 
 
-def give_suggestion_featurespace_single_article(writer_feature_subsection, txtstr=None, url=None):
+def give_suggestion_featurespace_single_article(writer_feature_subsection, txtstr=None, url=None, nshow=10):
     """
     Given a url from an article suggest other similar authors by calculating the features for that
     article and then comparing to the author features
@@ -110,7 +111,7 @@ def give_suggestion_featurespace_single_article(writer_feature_subsection, txtst
          'Author_wn': author_wn})
     output_df = tdf.sort_values(by='Similarity (0-10)', ascending=False)
     # output_df = output_df[output_df['authors'] != author]
-    return output_df.iloc[0:10]
+    return output_df.iloc[0:nshow]
 
 
 def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=None):
