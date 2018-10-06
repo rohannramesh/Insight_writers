@@ -10,6 +10,7 @@ from nltk.corpus import wordnet # To get words in dictionary with their parts of
 from nltk.stem import WordNetLemmatizer # lemmatizes word based on it's parts of speech
 from collections import Counter
 from nltk.corpus import stopwords 
+import gensim
 
 class ProcessArticle:
     """
@@ -27,6 +28,7 @@ class ProcessArticle:
         lz = WordNetLemmatizer()
         newstr = [lz.lemmatize(curr_word, self.get_pos(curr_word)) for curr_word in self.text]
         return newstr
+        
 
     def clean_text(self):
         """

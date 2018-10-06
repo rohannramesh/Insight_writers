@@ -30,9 +30,8 @@ import time
 def lemstr(txtstr):
     """
     Lemmatize text string
-    :param writer_feature_subsection: df that has each row for an author and each column a feature
-    :param author: author name
-    :return:
+    :param txtstr: input text to be lemmatized
+    :return: newstr: lemmatized text
     """
     lz = WordNetLemmatizer()
     newstr = [lz.lemmatize(curr_word, pa.get_pos(curr_word)) for curr_word in txtstr]
@@ -123,7 +122,7 @@ def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=N
     :return: df with recommendations
     """
     if article_url is not None:
-        arti, lem_text = grab_article(url)
+        arti, lem_text = grab_article(article_url)
     # preprocess data
     # a = grab_article_for_w2v(article_url)
     # get vector
@@ -211,11 +210,11 @@ def cos_sim(vec1,vec2):
 
 def get_search_terms(string=None, team_names=None):
     """
-    get the input for the search bar for the youtube api based on the named entities in the title of article
-    :param string: this is the string of the title
-    :param team_names: if you provide a list of team names will also check that in head to head
-    :param var: vector of std
-    :return:    
+    Do named entity recognition of title of article to enter into youtube search and
+    incorporate in list of team names
+    :param string: Title of article
+    :param team_names: All team names
+    :return: input_search: the string to enter to youtube for searching
     """
     doc = nlp(string)
     a = [i.text for i in doc.ents if (i.label_ == 'PERSON') | (i.label_ == 'GPE')]
@@ -236,7 +235,10 @@ def get_search_terms(string=None, team_names=None):
 
 def parse_iframe_html(input_vec):
     """
-    Parsing the url for dash iFrame format
+    parse the embedded url to pass to my web app
+    incorporate in list of team names
+    :param input_vec: url to be embedded from youtube
+    :return: output_url: the exact string to embed
     """
     output_url = []
     for i in input_vec:
@@ -245,3 +247,25 @@ def parse_iframe_html(input_vec):
         idx2 = tmpR.index('"')
         output_url.append(tmpR[:idx2])
     return output_url
+
+# detect if no english and return a flag
+def detect_nonenglish(txtstr):
+    """
+    return true if the text input is not english and false if english
+    param: txtstr - input string
+    return: true if not english, false if enlglish
+    """
+    b = sent_tokenize(txtstr)
+    b = b[0:np.max([10,len(b)])] # take longest of first 10 sentences
+    # n words per sentence
+    nwords = [len(word_tokenize(i)) for i in b]
+    if not nwords:
+        output = True
+    else:
+        idx = nwords.index(np.max(nwords))
+        c = detect(b[idx])
+        if c != 'en':
+            output = True
+        else:
+            output = False
+    return output

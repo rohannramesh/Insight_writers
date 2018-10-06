@@ -96,6 +96,15 @@ youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,developerKey=DEVEL
 
 def get_video_id(q, max_results,token, order="relevance", 
                  location=None, location_radius=None):
+    """
+    enter in search terms and get out metadate for youtube vido as well as the links to embed videos
+    :param q: search terms
+    :param max_results: max number of results back you want
+    :param token: page search number set to none if want limited returns
+    :param order: how to sort output (temporal vs relevance)
+    :return: ydict: dictionary with metadata and embedding url
+    :return: tok: token for next search
+    """
     # get youtube embedding info
     search_response = youtube.search().list(
         q=q, type="video", pageToken=token,part="id,snippet", 
@@ -388,6 +397,7 @@ def generate_tables_author_content_similarity(df_authors, df_content, urls_to_sh
 
 ####################
 app = dash.Dash(__name__)
+app.title = 'Full Court Presser'
 # app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 
