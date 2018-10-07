@@ -32,7 +32,7 @@ In order to suggest similar content, I trained a word2vec model on the entire co
 
 I then designed a Web App using Dash and hosted the website on Amazon Web Services at [fullcourtpresser.com](fullcourtpresser.com). A user enters their favorite current writer or the url of an article they have recently read. I scrape the article from the entered website, I pre-process the article and pass the text through my writing style recommendation system and my content based recommendation system. The user will then receive recommendations for other writers the user may enjoy as well as access to articles and video about similar content. The video recommendation is via named entity recognition and incorporation of the Youtube api. Importantly the user can view all article and video content within the webpage. See below for an image of the analysis pipeline:
 
-![alt text](figures/AnalysisPipeline.jpeg)
+![alt text](figures/AnalysisPipeline.jpg)
 
 ## Validation
 
