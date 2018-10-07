@@ -4,7 +4,7 @@
 
 ## Find your favorite NBA writers
 
-[Full Court Presser](www.fullcourtpresser.com) is a web app that quantifies writing style and content to find the best NBA content for you. The NBA is a rapidly growing market, having made $7.4 billion in 2017, up 32% from the year before. With this rapid growth comes a drastic increase in the number of fans watching NBA games and consuming NBA media content. How does a new NBA fan find the best NBA media content when this content is spread across many different media platforms? The factor that differentiates Full Court Presser from other news aggregators is the dual-pronged recommendation system that quantifies writer style and content. Importantly, while for this three week project I have focused on the NBA as a market, this approach can generalize to many different topics and is in no way limited to just sports.
+[Full Court Presser](http://www.fullcourtpresser.com) is a web app that quantifies writing style and content to find the best NBA content for you. The NBA is a rapidly growing market, having made $7.4 billion in 2017, up 32% from the year before. With this rapid growth comes a drastic increase in the number of fans watching NBA games and consuming NBA media content. How does a new NBA fan find the best NBA media content when this content is spread across many different media platforms? The factor that differentiates Full Court Presser from other news aggregators is the dual-pronged recommendation system that quantifies writer style and content. Importantly, while for this three week project I have focused on the NBA as a market, this approach can generalize to many different topics and is in no way limited to just sports.
 
 ## The data
 
@@ -30,7 +30,7 @@ In order to suggest similar content, I trained a word2vec model on the entire co
 
 ## Web app and analysis pipeline
 
-I then designed a Web App using Dash and hosted the website on Amazon Web Services at [fullcourtpresser.com](www.fullcourtpresser.com). A user enters their favorite current writer or the url of an article they have recently read. I scrape the article from the entered website, I pre-process the article and pass the text through my writing style recommendation system and my content based recommendation system. The user will then receive recommendations for other writers the user may enjoy as well as access to articles and video about similar content. The video recommendation is via named entity recognition and incorporation of the Youtube api. Importantly the user can view all article and video content within the webpage. See below for an image of the analysis pipeline:
+I then designed a Web App using Dash and hosted the website on Amazon Web Services at [fullcourtpresser.com](http://www.fullcourtpresser.com). A user enters their favorite current writer or the url of an article they have recently read. I scrape the article from the entered website, I pre-process the article and pass the text through my writing style recommendation system and my content based recommendation system. The user will then receive recommendations for other writers the user may enjoy as well as access to articles and video about similar content. The video recommendation is via named entity recognition and incorporation of the Youtube api. Importantly the user can view all article and video content within the webpage. See below for an image of the analysis pipeline:
 
 ![alt text](figures/AnalysisPipeline.jpg)
 
@@ -44,7 +44,7 @@ I can also take the same approach of splitting articles and calculating a cosine
 
 ![alt text](figures/ContentValidation@4x-100.jpg)
 
-I externally validated my writing style recommendations by using the api from [listennotes.com](www.listennotes.com) to collect the metadata about podcasts an NBA writer might have participated in. By searching for a given NBA writer I can find all podcasts that they have either hosted or participated in. I found that writers that have a similar writing style were 55% more likely to do a podcast together than writers who are not stylistically similar (see below). This is often because writers will host other writers to talk about their most recent article on their podcast. While the overall percentage is low (not all NBA writers participate in podcasts), the difference is statistically significant:
+I externally validated my writing style recommendations by using the api from [listennotes.com](http://www.listennotes.com) to collect the metadata about podcasts an NBA writer might have participated in. By searching for a given NBA writer I can find all podcasts that they have either hosted or participated in. I found that writers that have a similar writing style were 55% more likely to do a podcast together than writers who are not stylistically similar (see below). This is often because writers will host other writers to talk about their most recent article on their podcast. While the overall percentage is low (not all NBA writers participate in podcasts), the difference is statistically significant:
 
 ![alt text](figures/ExternalValidation@4x-100.jpg)
 
