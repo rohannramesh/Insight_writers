@@ -83,13 +83,10 @@ youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,developerKey=DEVEL
 
 
 
-# # embed_url = '//www.youtube.com/embed/o1BrK2KWifc'
-# # embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
 # embed_url = ['<iframe width="480" height="270" src="//www.youtube.com/embed/Cj_4DupKfuk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
 #  '<iframe width="480" height="270" src="//www.youtube.com/embed/LgzhCXsBdpA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
 #  '<iframe width="480" height="270" src="//www.youtube.com/embed/ui1SquTFnxo" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>']
 
-# pargr = 'Neuroscientist turned data scientist'
 
 #######################
 # FUNCTIONS
@@ -134,6 +131,9 @@ def get_video_id(q, max_results,token, order="relevance",
     return ydict, tok
 
 def get_Table_html(dataframe, recent_articles=None, titles_show=None, max_rows=10, styling=None):
+    """
+    building html table with appropriate formatting and styling for both authors and content suggestions
+    """
     rows = []
     for i in range(min(len(dataframe), max_rows)):
         row = []
@@ -194,20 +194,21 @@ def onLoad_author_names():
     return author_options
 
 def get_video_rows(embed_url):
+    """
+    get rows to visualize videos
+    """
     rows = []
     for rr in range(0,1):
         rows.append(html.Iframe(src=embed_url[rr], width='260', height='150'))
     return html.Div([rows]) 
 
-# def generate_about_me_text():
-#     return [
-#         html.Div([html.P('Neuroscientist turned data scientist with a love for the game', 
-#             style={'fontSize': 20})
-#             ], style={'position': 'absolute', 'left': -800, 'top': 200})
-#     ]
+
 
 
 def generate_tables_author_vs_author_similarity(df_authors, recent_articles, max_rows=5):
+    """
+    generate tables to visualize when give an author and finding other similar authors
+    """
     return [
     html.Div([
         html.Div([
@@ -401,11 +402,6 @@ app.title = 'Full Court Presser'
 # app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 
-# colors = {
-#     'background': '#111111',
-#     'text': '#111111'
-# }
-
 app.layout = html.Div(children=[
     html.Div([
         html.Div([
@@ -422,41 +418,7 @@ app.layout = html.Div(children=[
         html.Div([
             html.Br([])]),
         ]),
-        # html.Div([
-        #     html.Div([
-        #         html.Br([])]),
-        # html.H1(children='Full Court Presser',
-        #     style={'display': 'inline-block', 'float': 'left', 'color': 'white', 
-        #     'fontSize': 50,'margin-top': 40}),
-        # html.H3(children='''find your favorite writers.''' , 
-        #     style={'display': 'inline-block', 'float': 'right', 'color': 'white',
-        #      'textDecoration': 'none','margin-top': 45, 'margin-right': 10}),
 
-        # html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), width= 125, height = 125,
-        #         style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto', 
-        #         }),
-        # html.Div([
-        #     html.Br([])]),
-        # ], className='bgImage'),
-
-
-    	# html.Div([
-    	# html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), width= 170, height = 170,
-    	# 		style={'float': 'left'}),
-
-    	# 	# style={'verticalAlign': 'middle'}),
-
-    	# # html.Div([
-     # #    	html.Br([])]),
-
-     #    html.H1(children='Full Court Presser',
-    	#     style={'float': 'inherit', 'color': 'white'
-    	#                }
-     #        ),
-
-    	# ]),
-        # html.H2(children='''find your favorite writers.''' , 
-        # 	style={'textAlign': 'left', 'float': 'none', 'color': 'white', 'textDecoration': 'none'}),
         html.Div([html.Br([]),
             html.Br([])]),
         # input bars
@@ -475,44 +437,15 @@ app.layout = html.Div(children=[
                 'display': 'block','margin': '0 auto'}),
             html.Button(id='submit-button', n_clicks=0, children='SUBMIT'),]),
             ]),
-        # html.Div([html.Br([]),
-        #     html.Br([]),
-        #     html.Br([]),
-        #     html.Br([]),
-        #     html.Br([])]),
+
 
     ]),
     html.Div(id='output-state'),
 
-    # html.Div([
-    #     # html.H4(html.A(href=pargr, children='''About me''', target='TargetArticle', 
-    #     #     style={'color': 'black'})),
-    #     html.Button(id='my-button', n_clicks=0, children='About me',
-    #         style={'color': 'black', 'textTransform': 'none', 
-    #         'border': 'none', 'fontSize': 22}),
-    #     html.Div(id='output-button')
-    #     ], style={'position': 'absolute', 'left': 990, 'top': 145}),
-    # html.Div([
-    #     html.H4(children='''About me''',
-    #             style={ 'color': 'black'}),
-    #     ], style={'position': 'absolute', 'left': 1025, 'top': 130,}),
-
-
-
-
-
-# html.A(href=path_link, children='''About me''', target='TargetArticle')
 
 ],
 )
 
-# @app.callback(
-#     Output('output-button', 'children'), 
-#     [Input('my-button', 'n_clicks')])
-# def on_click(number_of_times_button_has_clicked):
-#     # print('woo')
-#     if number_of_times_button_has_clicked > 0:
-#         return generate_about_me_text()
 
 # for url
 @app.callback(
@@ -565,19 +498,6 @@ def update_output_div(n_clicks, input_value1, input_value2):
                     recent_articles, title_url)
 
 
-# for new dropdown menus
-    # @app.callback(
-    #     dash.dependencies.Output('opt-dropdown', 'options'),
-    #     [dash.dependencies.Input('name-dropdown', 'value')]
-    # )
-    # def update_date_dropdown(name):
-    #     return [{'label': i, 'value': i} for i in fnameDict[name]]
-
-    # @app.callback(
-    #     dash.dependencies.Output('display-selected-values', 'children'),
-    #     [dash.dependencies.Input('opt-dropdown', 'value')])
-    # def set_display_children(selected_value):
-    #     return 'you have selected {} option'.format(selected_value)
 
 
 # if __name__ == '__main__':
