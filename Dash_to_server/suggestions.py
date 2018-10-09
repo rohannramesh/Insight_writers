@@ -27,23 +27,19 @@ import difflib
 import time
 
 
-def lemstr(txtstr):
-    """
-    Lemmatize text string
-    :param txtstr: input text to be lemmatized
-    :return: newstr: lemmatized text
-    """
-    lz = WordNetLemmatizer()
-    newstr = [lz.lemmatize(curr_word, pa.get_pos(curr_word)) for curr_word in txtstr]
-    return newstr
 
 def grab_article(article_url):
     """
-    grab article from url entered
+    grab article from url entered using newspaper3k
+    :param article_url: website url
+    :return: article: newspaper3k article object
+    :return: lem_art: lemmatized article that has been simple pre-processed
     """
     article = Article(article_url)
+    # download and parse article
     article.download()
     article.parse()
+    # pre-process and lemmatize
     lem_art = lemstr(gensim.utils.simple_preprocess(article.text))
     return article, lem_art
 
@@ -54,11 +50,15 @@ def give_author_suggestion_from_author(writer_feature_subsection, author, nshow=
     :param writer_feature_subsection: df that has each row for an author and each column a feature
     :param author: author name
     :param nshow: number to output
-    :return:
+    :return: output_df: df that is sorted from most similar to least similar writer
+        columns correspond to cosine similarity*10, writer full name, writer website name
     """
+    # normalize the writer feature dataframe
     norm_feature_df = normalize_df(writer_feature_subsection)
+    # create two lists for the full name of writers and for website name for writers
     authors = norm_feature_df['author_fn'].tolist()
     author_wn = norm_feature_df['author_list']
+    # if statement if shift back to search bar
     if author not in authors:
         return 'Author not found in database'
     else:
@@ -72,6 +72,7 @@ def give_author_suggestion_from_author(writer_feature_subsection, author, nshow=
             similarity_vec.append(round(result1*10,1)) # multiply bu 10 to scale
         tdf = pd.DataFrame.from_dict({'Similarity (0-10)': similarity_vec, 
             'Authors': authors, 'Author_wn': author_wn})
+        # sort by similarity score
         output_df = tdf.sort_values(by='Similarity (0-10)', ascending=False)
         # filter our current author
         output_df = output_df[output_df['Authors'] != author]
@@ -83,17 +84,21 @@ def give_suggestion_featurespace_single_article(writer_feature_subsection, txtst
     Given a url from an article suggest other similar authors by calculating the features for that
     article and then comparing to the author features
     :param writer_feature_subsection: writer feature pandas dataframe
-    :param txtstr: article can be passed directly
+    :param txtstr: article text can be passed directly
     :param url: url for a website
-    :return:
+    :return: output_df: df that is sorted from most similar to least similar writer
+        columns correspond to cosine similarity*10, writer full name, writer website name
     """
+    # if pass text
     if txtstr is not None:
         curr = pa(txtstr)
         vec = curr.build_feature_vector_for_article()
+    # if pass url
     else:
         arti = grab_article(url)
         curr = pa(arti)
         vec = curr.build_feature_vector_for_article()
+    # normalize vector by database means and std and normalize df of all writers
     norm_vec = normalize_vec(vec, writer_feature_subsection.mean().tolist(),
                              writer_feature_subsection.std().tolist())
     norm_feature_df = normalize_df(writer_feature_subsection)
@@ -119,22 +124,22 @@ def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=N
     :param keyedvectors: low dimensional vectors from word2vec model
     :param w2v_df: the vectors from previous articles for cos_sim
     :param url: url for a website
-    :return: df with recommendations
+    :return: df_content_sim: df that is sorted from most similar to least similar article content
+        columns correspond to cosine similarity*10, and suggested urls
     """
     if article_url is not None:
         arti, lem_text = grab_article(article_url)
-    # preprocess data
-    # a = grab_article_for_w2v(article_url)
     # get vector
     article_vector = get_vector_from_w2v_model(keyedvectors, lem_text)
     # check against current df of articles using cos_sim
     cos_sim_output = []
     for i in w2v_df:
         cos_sim_output.append(round(cos_sim(w2v_df[i],article_vector)*10,1)) # multiply by 10 for scale
-
+    # build df
     r = pd.DataFrame.from_dict({
         'Similarity (0-10)': cos_sim_output, "Suggested articles": w2v_df.keys()
     })
+    # sort by cosine sim * 10
     df_content_sim = r.sort_values(by='Similarity (0-10)', ascending=False)
     df_content_sim = df_content_sim[df_content_sim['Similarity (0-10)'] != 10]
     return df_content_sim
@@ -142,7 +147,8 @@ def recommend_article_content(keyedvectors, w2v_df, lem_text=None, article_url=N
 
 def get_vector_from_w2v_model(keyedvectors, txtstr):
     """
-    Given a url from an article suggest other articles with similar content due to w2v
+    Get the vector from the word2vec model for an entire article by averaging across all words
+    in an article
     :param keyedvectors: low dimensional vectors from word2vec model
     :param txtsr: text from article
     :return: vector representation of article
@@ -192,7 +198,7 @@ def normalize_df(df):
 # same normalization but on vector
 def normalize_vec(list1, means, var):
     """
-    normalize a list
+    normalize a list by the mean and std of another distribution
     :param list1: list to be normalized
     :param means: vector of means
     :param var: vector of std
@@ -204,6 +210,8 @@ def normalize_vec(list1, means, var):
 def cos_sim(vec1,vec2):
     """
     Calculate cosine similarity between 2 vectors
+    :param vec1: vector 1
+    :param vec2: vector 2
     """
     a = dot(vec1, vec2)/(norm(vec1)*norm(vec2))
     return a
@@ -269,3 +277,14 @@ def detect_nonenglish(txtstr):
         else:
             output = False
     return output
+
+def lemstr(txtstr):
+    """
+    Lemmatize text string
+    :param txtstr: input text to be lemmatized
+    :return: newstr: lemmatized text
+    """
+    lz = WordNetLemmatizer()
+    # iterate through and find lemmatized version
+    newstr = [lz.lemmatize(curr_word, pa.get_pos(curr_word)) for curr_word in txtstr]
+    return newstr
