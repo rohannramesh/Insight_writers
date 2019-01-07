@@ -442,7 +442,7 @@ app.layout = html.Div(children=[
             ]),
 
 
-    ]),
+    ], className='searchdiv'),
     html.Div(id='output-state'),
 
 

@@ -17,12 +17,8 @@ body {
   color: rgb(255, 255, 255); 
 }
 body {
-    /*background-image: url("https://wallpaperclicker.com/storage/wallpaper/hd-nba-basketball-wallpaper-high-definition-96125480.jpg");*/
-    /*background-image: url('https://farm9.staticflickr.com/8479/8198980385_1318446f59_b.jpg');*/
-    /*background-image: url('https://wallpapertag.com/wallpaper/full/8/9/5/357170-large-basketball-court-background-2560x1600-laptop.jpg');*/
-    /*background-image: url('http://getwallpapers.com/wallpaper/full/a/9/3/397614.jpg');*/
-    /*box-shadow: 25px 25px 50px 0 black inset, -25px -25px 50px 0 black inset; */
-    background-image: url('CourtBlur.png');
+        /*box-shadow: 25px 25px 50px 0 black inset, -25px -25px 50px 0 black inset; */
+    /*background-image: url('CourtBlur.png');*/
     /*background-size: cover;*/
     /*background-size: 200% 100%;*/
     /*background-size: 1700px 2000px;*/
@@ -52,6 +48,16 @@ body {
     border-radius: 25px;
     margin-top: 20, 
     margin-bottom: 20
+}
+.searchdiv{
+  background-image: url('CourtBlur.png');
+  background-size: cover;
+  /* background-size: contain; */
+  background-repeat: no-repeat;
+  width: 100%;
+  /* height: 0; */
+  padding-top: 5%;
+  padding-bottom: 1%;
 }
 .InputBars {
   display: block;
